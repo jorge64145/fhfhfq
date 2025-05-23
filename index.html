@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Catálogo - Cold Boutique</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css">
+  <style>
+    @keyframes caerFlores {
+      0% { transform: translateY(-10%); opacity: 0; }
+      100% { transform: translateY(110vh); opacity: 1; }
+    }
+
+    body {
+      margin: 0;
+      background-color: #ffffff;
+      color: #333;
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    .flores {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 0;
+    }
+    .flor {
+      position: absolute;
+      top: -50px;
+      width: 40px;
+      height: 40px;
+      background-image: url('https://i.imgur.com/HASbQJc.png');
+      background-size: cover;
+      animation: caerFlores 10s linear infinite;
+    }
+    header {
+      text-align: center;
+      margin: 20px 0;
+      position: relative;
+      z-index: 1;
+    }
+    .logo-nombre-horizontal {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      justify-content: center;
+    }
+    .logo-nombre-horizontal img {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      padding: 5px;
+      background: white;
+      box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+    }
+    .logo-nombre-horizontal h1 {
+      margin: 0;
+      font-size: 2rem;
+      font-weight: 600;
+      color: #e91e63;
+      font-family: 'Segoe UI', sans-serif;
+    }
+    .catalogo {
+      width: 90%;
+      max-width: 600px;
+      background: #f9f9f9;
+      border-radius: 20px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.05);
+      padding: 20px;
+      margin-bottom: 30px;
+      position: relative;
+      z-index: 1;
+    }
+    .ropa-imagen {
+      width: 100%;
+      border-radius: 15px;
+      margin-bottom: 15px;
+    }
+    .detalle h2 {
+      margin: 5px 0;
+      font-size: 1.5rem;
+    }
+    .detalle p {
+      margin: 3px 0;
+    }
+    .miniaturas {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin-bottom: 15px;
+    }
+    .miniaturas img {
+      width: 60px;
+      height: 60px;
+      object-fit: cover;
+      border-radius: 10px;
+      cursor: pointer;
+      border: 2px solid transparent;
+    }
+    .miniaturas img.activa {
+      border-color: #e91e63;
+    }
+    .flechas {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 15px;
+      align-items: center;
+    }
+    .flechas button {
+      background-color: #e91e63;
+      border: none;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .checkbox-container {
+      text-align: center;
+      margin-top: 10px;
+    }
+    .checkbox-container input {
+      margin-right: 8px;
+    }
+    .redes {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+    .redes a {
+      display: inline-block;
+      background-color: #25d366;
+      color: white;
+      padding: 12px 25px;
+      border-radius: 30px;
+      text-decoration: none;
+      font-weight: bold;
+      font-size: 1.2rem;
+      opacity: 0.6;
+      pointer-events: none;
+    }
+    .redes a.activo {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .redes a:hover {
+      background-color: #1ebc5d;
+    }
+    .contador {
+      margin-top: 10px;
+      text-align: center;
+      font-weight: bold;
+    }
+    .total-seleccionadas {
+      font-size: 1rem;
+      margin-top: 5px;
+    }
+  </style>
+</head>
+<body onclick="iniciarMusica()">
+
+  <audio id="musicaFondo" loop>
+    <source src="https://ia800706.us.archive.org/15/items/luis-sanic-7429894761399569670/Luis%20Sanic_7429894761399569670.mp3" type="audio/mpeg">
+    Tu navegador no soporta audio HTML5.
+  </audio>
+
+  <!-- Botón flotante -->
+  <div style="position: fixed; top: 20px; right: 20px; z-index: 999;">
+    <button onclick="toggleMusica()" id="botonMusica" title="Silenciar música" style="
+      background-color: #e91e63;
+      color: white;
+      border: none;
+      padding: 12px;
+      border-radius: 50%;
+      font-size: 18px;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      transition: transform 0.2s ease;
+    " onmouseover="this.style.transform='scale(1.15)'" onmouseout="this.style.transform='scale(1)'">
+      <i class="fas fa-volume-mute"></i>
+    </button>
+  </div>
+
+  <div class="flores"></div>
+  <header>
+    <div class="logo-nombre-horizontal">
+      <img src="https://i.imgur.com/WGxFKH4.png" alt="Cold Boutique">
+      <h1>Cold Boutique</h1>
+    </div>
+  </header>
+
+  <div class="catalogo">
+    <img id="imagenRopa" class="ropa-imagen" src="" alt="Prenda">
+    <div class="miniaturas" id="miniaturas"></div>
+    <div class="detalle">
+      <h2 id="nombreRopa"></h2>
+      <p id="marcaRopa"></p>
+      <p id="precioRopa"></p>
+    </div>
+    <div class="checkbox-container">
+      <input type="checkbox" id="seleccionarPrenda" onchange="guardarSeleccion(true)"> <label for="seleccionarPrenda">Añadir al carrito</label>
+    </div>
+    <div class="flechas">
+      <button onclick="cambiarModelo(-1)"><i class="fas fa-arrow-left"></i></button>
+      <span id="contador" class="contador"></span>
+      <button onclick="cambiarModelo(1)"><i class="fas fa-arrow-right"></i></button>
+    </div>
+    <div class="total-seleccionadas" id="totalSeleccionadas">Prendas seleccionadas: 0</div>
+  </div>
+
+  <div class="redes">
+    <a id="botonWhatsapp" href="#" target="_blank" onclick="return validarCompra()">Finalizar compra por WhatsApp</a>
+  </div>
+
+  <script>
+    const modelos = [
+      {
+        imagenes: ["https://i.imgur.com/kOl8a9j.jpeg", "https://i.imgur.com/T7H366Z.jpeg", "https://i.imgur.com/XPguFcl.jpeg"],
+        nombre: "Polera de Hilo - Manga Coreana",
+        marca: "Cold",
+        precio: "S/ 31.00"
+      },
+      {
+        imagenes: ["https://imgur.com/kNU1dEd.jpg", "https://imgur.com/RgwgYkZ.jpg", "https://imgur.com/r6aTjaX.jpg"],
+        nombre: "Polera de Hilo - Crop Trenzado",
+        marca: "Cold",
+        precio: "S/ 33.00"
+      },
+      {
+        imagenes: ["https://imgur.com/fhYG1xo.jpg", "https://imgur.com/nFvEvPT.jpg", "https://imgur.com/9QXhKiX.jpg", "https://imgur.com/lT6jOj3.jpg"],
+        nombre: "Polera de Hilo - Modelo Abril",
+        marca: "Cold",
+        precio: "S/ 33.00"
+      },
+      {
+        imagenes: ["https://imgur.com/x0wnyuI.jpg", "https://imgur.com/CSJwpb9.jpg"],
+        nombre: "Polera de Hilo - Albino Crop",
+        marca: "Cold",
+        precio: "S/ 33.00"
+      },
+      {
+        imagenes: ["https://imgur.com/9f3tkeB.jpg", "https://imgur.com/oqOmeMy.jpg", "https://imgur.com/5GOv8Ra.jpg"],
+        nombre: "Polera de Hilo - Murciélago Cuello Alto",
+        marca: "Cold",
+        precio: "S/ 34.00"
+      }
+    ];
+
+    let actual = 0;
+    let seleccionadas = [];
+    let imagenSeleccionada = 0;
+    let musicaIniciada = false;
+
+    function cambiarModelo(direccion) {
+      actual = (actual + direccion + modelos.length) % modelos.length;
+      imagenSeleccionada = 0;
+      renderModelo();
+    }
+
+    function renderModelo() {
+      const modelo = modelos[actual];
+      document.getElementById("imagenRopa").src = modelo.imagenes[imagenSeleccionada];
+      document.getElementById("nombreRopa").innerText = modelo.nombre;
+      document.getElementById("marcaRopa").innerText = "Marca: " + modelo.marca;
+      document.getElementById("precioRopa").innerText = "Precio: " + modelo.precio;
+      document.getElementById("contador").innerText = `${actual + 1}/${modelos.length}`;
+      document.getElementById("seleccionarPrenda").checked = seleccionadas.includes(actual);
+
+      const miniaturas = document.getElementById("miniaturas");
+      miniaturas.innerHTML = "";
+      modelo.imagenes.forEach((img, idx) => {
+        const thumb = document.createElement("img");
+        thumb.src = img;
+        if (idx === imagenSeleccionada) thumb.classList.add("activa");
+        thumb.onclick = () => {
+          imagenSeleccionada = idx;
+          renderModelo();
+        };
+        miniaturas.appendChild(thumb);
+      });
+    }
+
+    function guardarSeleccion(desdeCheckbox = false) {
+      const checkbox = document.getElementById("seleccionarPrenda");
+      if (checkbox.checked && !seleccionadas.includes(actual)) {
+        seleccionadas.push(actual);
+      } else if (!checkbox.checked && seleccionadas.includes(actual)) {
+        seleccionadas = seleccionadas.filter(i => i !== actual);
+      }
+      actualizarBotonWhatsapp();
+      if (!desdeCheckbox) document.getElementById("seleccionarPrenda").checked = seleccionadas.includes(actual);
+    }
+
+    function actualizarBotonWhatsapp() {
+      const boton = document.getElementById("botonWhatsapp");
+      const mensaje = seleccionadas.map(i => `• ${modelos[i].nombre} (${modelos[i].marca}, ${modelos[i].precio})`).join("%0A");
+      const enlace = `https://wa.me/51914214278?text=Hola, quiero comprar estas prendas seleccionadas:%0A${mensaje}`;
+      boton.href = enlace;
+      boton.className = seleccionadas.length > 0 ? "activo" : "";
+      document.getElementById("totalSeleccionadas").innerText = `Prendas seleccionadas: ${seleccionadas.length}`;
+    }
+
+    function validarCompra() {
+      if (seleccionadas.length === 0) {
+        alert("Por favor, selecciona al menos una prenda antes de finalizar la compra.");
+        return false;
+      }
+      return true;
+    }
+
+    function toggleMusica() {
+      const audio = document.getElementById("musicaFondo");
+      const icono = document.querySelector("#botonMusica i");
+      if (audio.paused) {
+        audio.play();
+        icono.className = "fas fa-volume-up";
+      } else {
+        audio.pause();
+        icono.className = "fas fa-volume-mute";
+      }
+    }
+
+    function iniciarMusica() {
+      if (!musicaIniciada) {
+        document.getElementById("musicaFondo").play();
+        document.querySelector("#botonMusica i").className = "fas fa-volume-up";
+        musicaIniciada = true;
+      }
+    }
+
+    function generarFlores() {
+      const floresContainer = document.querySelector('.flores');
+      for (let i = 0; i < 15; i++) {
+        const flor = document.createElement('div');
+        flor.classList.add('flor');
+        flor.style.left = Math.random() * 100 + 'vw';
+        flor.style.animationDelay = (Math.random() * 10) + 's';
+        flor.style.animationDuration = (5 + Math.random() * 5) + 's';
+        floresContainer.appendChild(flor);
+      }
+    }
+
+    generarFlores();
+    renderModelo();
+  </script>
+</body>
+</html>
+
+
+
